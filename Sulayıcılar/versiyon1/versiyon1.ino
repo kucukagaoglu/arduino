@@ -14,8 +14,11 @@ yanacaktır. Böylece de toprağın kuruması engellenecektir.
 
 */
 
+#include <EEPROM.h>
+
 //#define kontrol_peryodu 10 //3600 bir saat demek
 //#define sulama_suresi 10 // 10 saniye boyunca sadece sula
+
 
 unsigned char kontrol_peryodu; //dakikada bir nemi kontrol et
 unsigned char sulama_suresi; // ... saniye boyunca sadece sula
@@ -41,7 +44,11 @@ const int motor = 8; // nem yetersiz ise motoru çalıştır.
 int sensorValue = 0;        // value read from the pot
 int outputValue = 0;        // value output to the PWM (analog out)
 
- 
+// EEPROM için adresler
+
+int peryod_adres=0; //peryod 0. adresde tutulsun
+int sulama_suresi_adres=1; // sulama suresi 1. adresde tutulsun
+
 
 
 
@@ -50,12 +57,17 @@ int outputValue = 0;        // value output to the PWM (analog out)
 void setup(void) {
 
  
-  Serial.begin(9600); // Seri iletişimi başlatıyoruz.
+  Serial.begin(115200); // Seri iletişimi başlatıyoruz.
+    Serial.println("---------------------");
+  
    
     //motor pini output de
     pinMode(motor, OUTPUT); 
     
     //
+    
+    kontrol_peryodu=EEPROM.read(peryod_adres);
+    sulama_suresi=EEPROM.read(sulama_suresi_adres);
     
   
 }
@@ -143,15 +155,28 @@ void sulama_kontrol()
   
 }
 
-void loop(void) {
 
-  
-  Serial.println("Merhaba! Sistem basitce; girdiginiz kontrol peryodu");
+
+void acilis_mesaji()
+
+{
+Serial.println("Merhaba! Sistem basitce; girdiginiz kontrol peryodu");
   Serial.println("kadar surede bir nemi kontrol eder, nem az ise sulama suresi ");
   Serial.println("kadar sulama motorunu calistirir!");
   Serial.println("***********");
+
+}
+
+
+void loop(void) {
+
+  
+  acilis_mesaji();
   
   
+if(kontrol_peryodu==0 && sulama_suresi==0)
+
+{
   
   Serial.print("Kontrol Peryodunu Giriniz(dakika):");  Serial.println("");
   
@@ -166,6 +191,9 @@ while(kontrol_peryodu<15)
                 Serial.print((int)kontrol_peryodu);
                 Serial.println(" dakika girildi!");  
                 Serial.println(" __________________");
+                
+                EEPROM.write(peryod_adres, kontrol_peryodu);
+                
 
 if(kontrol_peryodu<15) 
 {
@@ -187,6 +215,8 @@ while(sulama_suresi<15)
                 Serial.print((int)sulama_suresi);
                 Serial.println(" saniye girildi!");
                 Serial.println(" __________________");
+                
+                EEPROM.write(sulama_suresi_adres, sulama_suresi);
 
 if(sulama_suresi<15) 
 {
@@ -196,7 +226,7 @@ if(sulama_suresi<15)
 }
 /////////////////
 
-
+}
   
   while(Serial.read()!='x')
   
