@@ -1,0 +1,18 @@
+Enable-->Vcc
+GPIO0-->GND
+GPIO15-->Vcc
+----------
+AT+CWLAP=3 OLMALI Kİ AP LERİ GÖRSÜN!
+
+------fİRMWARE YÜKLEME---
+
+Pin		Working Mode		Flash Mode	Description
+VCC, GND*	power supply, better use a standalone, and share ground with uart port
+TXD, RXD**	uart interface
+RST		Restart on low TTL
+CH_PD		High TTL		High TTL	Chip select, constant High TTL for both mode
+GPIO0		High TTL(optionally)	Low TTL		Switch Wroking/Flash Mode
+GPIO 15		Low TTL			Low TTL		Constant Low TTL for both mode , N/A for ESP-01
+GPIO 2		High TTL		High TTL		Constant High TTL for both mode, maybe not necessary
+Red LEDs	constants on to show the power status
+Blue LEDs	blink when data come through
